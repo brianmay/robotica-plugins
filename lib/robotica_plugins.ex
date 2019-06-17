@@ -75,6 +75,6 @@ defmodule RoboticaPlugins do
 
   @spec wait(server :: pid) :: nil
   def wait(server) do
-    GenServer.call(server, {:wait}, :infinity)
+    GenServer.call(server, {:wait}, 60000)
   end
 end
