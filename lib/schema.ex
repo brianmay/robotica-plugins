@@ -28,7 +28,8 @@ defmodule RoboticaPlugins.Schema do
   def lights_action_schema do
     %{
       action: {:string, true},
-      color: {lights_color(), false}
+      color: {lights_color(), false},
+      duration: {:integer, false}
     }
   end
 
