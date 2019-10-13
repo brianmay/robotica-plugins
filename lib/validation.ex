@@ -1,5 +1,5 @@
 defmodule RoboticaPlugins.Validation do
-  defp module_to_schema(module), do: {:ok, apply(module, :config_schema, [])}
+  @map_types Application.get_env(:robotica_plugins, :map_types)
 
   defp plugin_available?(module) do
     case Code.ensure_compiled?(module) do
@@ -47,19 +47,18 @@ defmodule RoboticaPlugins.Validation do
 
   defp validate_kwlist(%{}, [], _), do: {:ok, %{}}
 
-  defp validate_kwlist(%{} = data, [_head | _tail] = schema, RoboticaPlugins.Plugin) do
-    with {:ok, result} <- validate_kwlist_any(data, schema),
-         config <- Map.fetch!(data, "config"),
-         {:ok, config_schema} <- module_to_schema(result.module),
-         {:ok, config} <- validate_schema(config, config_schema) do
-      {:ok, Map.put(result, :config, config)}
+  defp validate_kwlist(%{} = raw_data, [_head | _tail] = schema, struct_type) do
+    with {:ok, data} <- validate_kwlist_any(raw_data, schema) do
+      case Keyword.get(@map_types, struct_type) do
+        nil ->
+          {:ok, data}
+
+        {module, name} ->
+          apply(module, name, [raw_data, data])
+      end
     else
       {:error, err} -> {:error, err}
     end
-  end
-
-  defp validate_kwlist(%{} = data, [_head | _tail] = schema, _) do
-    validate_kwlist_any(data, schema)
   end
 
   defp validate_map([], _, _), do: {:ok, %{}}
