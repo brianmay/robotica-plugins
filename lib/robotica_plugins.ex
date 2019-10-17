@@ -31,5 +31,37 @@ defmodule RoboticaPlugins do
     defstruct id: nil,
               status: nil,
               expires_time: nil
+
+  defmodule Step do
+    @type t :: %__MODULE__{
+            required_time: integer,
+            latest_time: integer | nil,
+            zero_time: boolean(),
+            task: ScheduledTask.t()
+          }
+    @enforce_keys [:required_time, :latest_time, :task]
+    defstruct required_time: nil, latest_time: nil, zero_time: false, task: nil
+  end
+
+  defmodule SingleStep do
+    @type t :: %__MODULE__{
+            required_time: %DateTime{},
+            latest_time: %DateTime{},
+            task: ScheduledTask.t()
+          }
+    @enforce_keys [:required_time, :latest_time, :task]
+    defstruct required_time: nil, latest_time: nil, task: nil
+  end
+
+  defmodule MultiStep do
+    @type t :: %__MODULE__{
+            required_time: %DateTime{},
+            latest_time: %DateTime{},
+            tasks: list(ScheduledTask.t())
+          }
+    @enforce_keys [:required_time, :latest_time, :tasks]
+    defstruct required_time: nil,
+              latest_time: nil,
+              tasks: []
   end
 end
