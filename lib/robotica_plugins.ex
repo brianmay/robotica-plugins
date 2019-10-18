@@ -35,6 +35,19 @@ defmodule RoboticaPlugins do
               stop_time: nil
   end
 
+  defmodule ScheduledTask do
+    @type t :: %__MODULE__{
+            locations: list(String.t()),
+            action: Action.t(),
+            id: String.t() | nil,
+            mark: Mark.t() | nil,
+            repeat_time: integer | nil,
+            repeat_count: integer
+          }
+    @enforce_keys [:locations, :action, :mark, :repeat_time, :repeat_count]
+    defstruct locations: [], action: nil, id: nil, mark: nil, repeat_time: nil, repeat_count: 0
+  end
+
   defmodule ScheduledStep do
     @type t :: %__MODULE__{
             required_time: integer,
