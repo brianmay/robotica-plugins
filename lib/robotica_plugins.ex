@@ -35,7 +35,7 @@ defmodule RoboticaPlugins do
               stop_time: nil
   end
 
-  defmodule Step do
+  defmodule ScheduledStep do
     @type t :: %__MODULE__{
             required_time: integer,
             latest_time: integer | nil,
