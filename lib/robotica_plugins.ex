@@ -43,7 +43,10 @@ defmodule RoboticaPlugins do
             task: ScheduledTask.t()
           }
     @enforce_keys [:required_time, :latest_time, :task]
-    defstruct required_time: nil, latest_time: nil, zero_time: false, task: nil
+    defstruct required_time: nil,
+              latest_time: nil,
+              zero_time: false,
+              task: nil
   end
 
   defmodule SingleStep do
