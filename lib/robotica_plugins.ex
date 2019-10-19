@@ -10,6 +10,27 @@ defmodule RoboticaPlugins do
               lights: nil,
               sound: nil,
               music: nil
+
+    def v(value), do: not is_nil(value)
+
+    def action_to_msg(%Action{} = action) do
+      message = action.message
+      lights = action.lights
+      music = action.music
+
+      message_text = get_in(message, [:text])
+      lights_action = get_in(lights, [:action])
+      music_playlist = get_in(music, [:play_list])
+      music_stop = get_in(music, [:stop])
+
+      cond do
+        v(message_text) -> message_text
+        v(lights_action) -> "Lights #{lights_action}"
+        v(music_stop) and music_stop -> "Music stop."
+        v(music_playlist) -> "Music #{music_playlist}."
+        true -> "N/A"
+      end
+    end
   end
 
   defmodule Task do
@@ -46,6 +67,33 @@ defmodule RoboticaPlugins do
           }
     @enforce_keys [:locations, :action, :mark, :repeat_time, :repeat_count]
     defstruct locations: [], action: nil, id: nil, mark: nil, repeat_time: nil, repeat_count: 0
+
+    defp div_rem(value, divider) do
+      {div(value, divider), rem(value, divider)}
+    end
+
+    defp pad(number) do
+      number
+      |> Integer.to_string()
+      |> String.pad_leading(2, "0")
+    end
+
+    defp duration_to_string(duration) do
+      {total, seconds} = div_rem(duration, 60)
+      {hours, minutes} = div_rem(total, 60)
+
+      "#{pad(hours)}:#{pad(minutes)}:#{pad(seconds)}"
+    end
+
+    def task_to_msg(%ScheduledTask{} = task) do
+      action_str = Action.action_to_msg(task.action)
+
+      if task.repeat_count > 0 do
+        "#{action_str} (#{task.repeat_count}/#{duration_to_string(task.repeat_time)})"
+      else
+        action_str
+      end
+    end
   end
 
   defmodule ScheduledStep do
